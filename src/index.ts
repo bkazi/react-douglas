@@ -1,1 +1,1 @@
-export * from './Window';
+export { default as Window } from './Window';

@@ -3,9 +3,13 @@
   "version": "1.0.0",
   "description": "GUI windowing system for react",
   "main": "dist/react-douglas.min.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "start": "webpack-dev-server --open --hot --config ./example/webpack.config.js",
-    "build": "webpack -p",
+    "build": "webpack",
     "test": "tslint --fix --project .",
     "reformat:src": "prettier --write 'src/**/*'",
     "reformat:example": "prettier --write 'example/src/**/*'",
