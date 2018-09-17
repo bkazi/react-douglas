@@ -6,7 +6,8 @@
       {
         "targets": {
           "browsers": ">1%"
-        }
+        },
+        "modules": false
       }
     ],
     "@babel/preset-react"
