@@ -4,10 +4,11 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry: path.join(__dirname, 'src', 'index.tsx'),
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-eval-source-map',
   devServer: {
-    contentBase: './dist'
+    contentBase: './dist',
   },
+  mode: 'development',
   module: {
     rules: [
       {
@@ -27,12 +28,12 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'index.html'),
+      template: path.join(__dirname, 'index.html'),
       filename: 'index.html',
-    })
+    }),
   ],
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  }
+    path: path.resolve(__dirname, 'dist'),
+  },
 };

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import Window, { WindowType } from '../../src/Window';
+import { Window as DouglasWindow, WindowType } from '../../src';
 
 import './style.css';
 
-class App extends React.Component<{}, {windowType: WindowType}> {
+class App extends React.Component<{}, { windowType: WindowType }> {
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -21,9 +21,7 @@ class App extends React.Component<{}, {windowType: WindowType}> {
         >
           Virtual
         </button>
-        <button
-          onClick={() => this.setState({ windowType: WindowType.TAB })}
-        >
+        <button onClick={() => this.setState({ windowType: WindowType.TAB })}>
           Tab
         </button>
         <button
@@ -31,12 +29,13 @@ class App extends React.Component<{}, {windowType: WindowType}> {
         >
           Window
         </button>
-        <Window
+        <DouglasWindow
           windowType={this.state.windowType}
           x={100}
           y={100}
           width={640}
           height={480}
+          className="window"
         >
           <div
             style={{
@@ -47,12 +46,10 @@ class App extends React.Component<{}, {windowType: WindowType}> {
           >
             HelloWorld!
           </div>
-        </Window>
+        </DouglasWindow>
       </div>
     );
   }
 }
 
-console.log(Window);
-
-ReactDOM.render(<App/>, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('app'));
