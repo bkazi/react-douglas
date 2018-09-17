@@ -35,6 +35,7 @@ class App extends React.Component<{}, { windowType: WindowType }> {
           y={100}
           width={640}
           height={480}
+          className="window"
         >
           <div
             style={{

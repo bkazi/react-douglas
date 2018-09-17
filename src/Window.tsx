@@ -25,6 +25,8 @@ interface Props {
   initialY?: number;
   initialWidth?: number;
   initialHeight?: number;
+
+  className?: string;
 }
 
 interface State {
@@ -240,6 +242,7 @@ export default class Win extends React.Component<Props, State> {
           width: `${this.props.width || this.state.width}px`,
           height: `${this.props.height || this.state.height}px`,
         }}
+        className={this.props.className}
       >
         {this.props.children}
       </div>
@@ -247,6 +250,9 @@ export default class Win extends React.Component<Props, State> {
   }
 
   renderPortalWindow() {
+    if (this.props.className) {
+      this.container.className = this.props.className;
+    }
     return ReactDOM.createPortal(this.props.children, this.container);
   }
 
