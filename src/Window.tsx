@@ -7,16 +7,17 @@ enum WindowType {
   WINDOW = 'WINDOW',
 }
 
+interface RenderProps {
+  changeX: (x: number | ((x: number) => number)) => void;
+  changeY: (y: number | ((y: number) => number)) => void;
+  changeWidth: (width: number) => void;
+  changeHeight: (height: number) => void;
+  changeWindowType: (windowType: WindowType) => void;
+  windowType: WindowType;
+}
+
 interface Props {
   scrollable?: boolean;
-
-  // Controlling props
-  windowType?: WindowType;
-  title?: string;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
 
   // Initial set props
   initialWindowType?: WindowType;
@@ -27,6 +28,7 @@ interface Props {
   initialHeight?: number;
 
   className?: string;
+  children: (renderProps: RenderProps) => React.ReactChild;
 }
 
 interface State {
@@ -36,16 +38,16 @@ interface State {
   y: number;
   width: number;
   height: number;
+  containerEl?: HTMLDivElement;
 }
 
 class Win extends React.Component<Props, State> {
-  private container = document.createElement('div');
   private externalWindow: Window | null = null;
 
-  public constructor(props: Props, ...args: any[]) {
-    super(props, ...args);
+  state = Win.getInitialState(this.props);
 
-    this.state = {
+  static getInitialState(props: Props): State {
+    return {
       windowType: props.initialWindowType || WindowType.VIRTUAL,
       title:
         props.initialTitle ||
@@ -60,9 +62,9 @@ class Win extends React.Component<Props, State> {
   public componentDidMount() {
     window.addEventListener('beforeunload', this.onWindowClose);
 
-    if (this.props.windowType !== WindowType.VIRTUAL) {
+    if (this.state.windowType !== WindowType.VIRTUAL) {
       this.changeWindowType(
-        this.props.windowType || this.state.windowType,
+        this.state.windowType || this.state.windowType,
         WindowType.VIRTUAL
       );
     }
@@ -76,66 +78,27 @@ class Win extends React.Component<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Props, prevState: State) {
-    if (
-      this.props.windowType &&
-      this.props.windowType !== prevProps.windowType
-    ) {
-      this.changeWindowType(
-        this.props.windowType,
-        prevProps.windowType || prevState.windowType
-      );
-    }
-    if (
-      !this.props.windowType &&
-      this.state.windowType !== (prevProps.windowType || prevState.windowType)
-    ) {
-      this.changeWindowType(
-        this.state.windowType,
-        prevProps.windowType || prevState.windowType
-      );
+    if (this.state.windowType !== prevState.windowType) {
+      this.changeWindowType(this.state.windowType, prevState.windowType);
     }
 
-    if (this.props.title && this.props.title !== prevProps.title) {
-      this.changeTitle(this.props.title);
-    }
-    if (
-      !this.props.title &&
-      this.state.title !== (prevProps.title || prevState.title)
-    ) {
+    if (this.state.title !== prevState.title) {
       this.changeTitle(this.state.title);
     }
 
-    if (this.props.x && this.props.x !== prevProps.x) {
-      this.changeX(this.props.x);
-    }
-    if (!this.props.x && this.state.x !== (prevProps.x || prevState.x)) {
+    if (this.state.x !== prevState.x) {
       this.changeX(this.state.x);
     }
 
-    if (this.props.y && this.props.y !== prevProps.y) {
-      this.changeY(this.props.y);
-    }
-    if (!this.props.y && this.state.y !== (prevProps.y || prevState.y)) {
+    if (this.state.y !== prevState.y) {
       this.changeY(this.state.y);
     }
 
-    if (this.props.width && this.props.width !== prevProps.width) {
-      this.changeWidth(this.props.width);
-    }
-    if (
-      !this.props.width &&
-      this.state.width !== (prevProps.width || prevState.width)
-    ) {
+    if (this.state.width !== prevState.width) {
       this.changeWidth(this.state.width);
     }
 
-    if (this.props.height && this.props.height !== prevProps.height) {
-      this.changeHeight(this.props.height);
-    }
-    if (
-      !this.props.height &&
-      this.state.height !== (prevProps.height || prevState.height)
-    ) {
+    if (this.state.height !== prevState.height) {
       this.changeHeight(this.state.height);
     }
   }
@@ -154,12 +117,12 @@ class Win extends React.Component<Props, State> {
     if (windowType !== WindowType.VIRTUAL) {
       this.externalWindow = window.open(
         '',
-        this.props.windowType === WindowType.TAB ? '_blank' : '',
-        this.props.windowType === WindowType.WINDOW
-          ? `width=${this.props.width || this.state.width},` +
-            `height=${this.props.height || this.state.height},` +
-            `left=${this.props.x || this.state.x},` +
-            `top=${this.props.y || this.state.y},` +
+        this.state.windowType === WindowType.TAB ? '_blank' : '',
+        this.state.windowType === WindowType.WINDOW
+          ? `width=${this.state.width},` +
+            `height=${this.state.height},` +
+            `left=${this.state.x},` +
+            `top=${this.state.y},` +
             'channelmode=no,' +
             'location=no,' +
             'menubar=no,' +
@@ -170,17 +133,25 @@ class Win extends React.Component<Props, State> {
       );
 
       if (this.externalWindow) {
+        const { document } = this.externalWindow;
         // this.externalWindow.addEventListener('unload', this.close);
 
-        this.externalWindow.document.head.appendChild(
-          this.externalWindow.document.createElement('title')
-        );
-        this.changeTitle(this.props.title || this.state.title);
+        document.head.appendChild(document.createElement('title'));
+        this.changeTitle(this.state.title);
 
-        this.externalWindow.document.body.appendChild(this.container);
+        const containerEl = document.createElement('div');
+        this.setState({ containerEl }, () => {
+          document.body.appendChild(containerEl);
+        });
       }
     }
   }
+
+  private renderChangeWindowType = (windowType: WindowType) => {
+    this.setState({
+      windowType,
+    });
+  };
 
   private changeTitle(titleString: string) {
     if (this.externalWindow) {
@@ -191,40 +162,59 @@ class Win extends React.Component<Props, State> {
     }
   }
 
-  private changeX(x: number) {
-    if (
-      this.externalWindow &&
-      (this.props.windowType || this.state.windowType) === WindowType.WINDOW
-    ) {
+  private changeX = (x: number) => {
+    if (this.externalWindow && this.state.windowType === WindowType.WINDOW) {
       this.externalWindow.moveTo(x, window.screenY || window.screenTop);
     }
-  }
+  };
 
-  private changeY(y: number) {
-    if (
-      this.externalWindow &&
-      (this.props.windowType || this.state.windowType) === WindowType.WINDOW
-    ) {
+  private renderChangeX = (x: number | ((x: number) => number)) => {
+    if (typeof x === 'number') {
+      this.setState({ x });
+    } else {
+      this.setState(prevState => ({
+        x: x(prevState.x),
+      }));
+    }
+  };
+
+  private changeY = (y: number) => {
+    if (this.externalWindow && this.state.windowType === WindowType.WINDOW) {
       this.externalWindow.moveTo(window.screenX || window.screenLeft, y);
     }
-  }
+  };
+
+  private renderChangeY = (y: number | ((y: number) => number)) => {
+    if (typeof y === 'number') {
+      this.setState({ y });
+    } else {
+      this.setState(prevState => ({
+        y: y(prevState.y),
+      }));
+    }
+  };
 
   private changeWidth(width: number) {
-    if (
-      this.externalWindow &&
-      (this.props.windowType || this.state.windowType) === WindowType.WINDOW
-    ) {
+    if (this.externalWindow && this.state.windowType === WindowType.WINDOW) {
       this.externalWindow.resizeTo(width, window.outerHeight);
     }
   }
 
   private changeHeight(height: number) {
-    if (
-      this.externalWindow &&
-      (this.props.windowType || this.state.windowType) === WindowType.WINDOW
-    ) {
+    if (this.externalWindow && this.state.windowType === WindowType.WINDOW) {
       this.externalWindow.resizeTo(window.outerWidth, height);
     }
+  }
+
+  private renderChildren() {
+    return this.props.children({
+      changeX: this.renderChangeX,
+      changeY: this.renderChangeY,
+      changeHeight: this.changeHeight,
+      changeWidth: this.changeWidth,
+      changeWindowType: this.renderChangeWindowType,
+      windowType: this.state.windowType,
+    });
   }
 
   private renderVirtualWindow() {
@@ -233,32 +223,40 @@ class Win extends React.Component<Props, State> {
         style={{
           position: 'absolute',
           overflow: this.props.scrollable ? 'auto' : 'hidden',
-          left: `${this.props.x || this.state.x}px`,
-          top: `${this.props.y || this.state.y}px`,
-          width: `${this.props.width || this.state.width}px`,
-          height: `${this.props.height || this.state.height}px`,
+          left: `${this.state.x}px`,
+          top: `${this.state.y}px`,
+          width: `${this.state.width}px`,
+          height: `${this.state.height}px`,
         }}
         className={this.props.className}
       >
-        {this.props.children}
+        {this.renderChildren()}
       </div>
     );
   }
 
   private renderPortalWindow() {
-    if (this.props.className) {
-      this.container.className = this.props.className;
+    const { containerEl } = this.state;
+
+    if (!containerEl) {
+      return null;
     }
-    return ReactDOM.createPortal(this.props.children, this.container);
+
+    if (this.props.className) {
+      containerEl.className = this.props.className;
+    }
+    return ReactDOM.createPortal(this.renderChildren(), containerEl);
   }
 
   public render() {
-    switch (this.props.windowType) {
+    switch (this.state.windowType) {
       case WindowType.VIRTUAL:
         return this.renderVirtualWindow();
       case WindowType.TAB:
       case WindowType.WINDOW:
         return this.renderPortalWindow();
+      default:
+        return null;
     }
   }
 }

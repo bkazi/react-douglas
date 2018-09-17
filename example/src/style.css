@@ -7,6 +7,13 @@ body {
   height: 100vh;
 }
 
+.toolbar {
+  display: flex;
+  flex-direction: row;
+  height: 56px;
+  background-color: rebeccapurple;
+}
+
 .window {
   box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.2);
 }
