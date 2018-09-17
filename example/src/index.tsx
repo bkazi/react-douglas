@@ -5,7 +5,7 @@ import Window, { WindowType } from '../../src/Window';
 
 import './style.css';
 
-class App extends React.Component<{}, {windowType: WindowType}> {
+class App extends React.Component<{}, { windowType: WindowType }> {
   constructor(props: {}) {
     super(props);
     this.state = {
@@ -21,9 +21,7 @@ class App extends React.Component<{}, {windowType: WindowType}> {
         >
           Virtual
         </button>
-        <button
-          onClick={() => this.setState({ windowType: WindowType.TAB })}
-        >
+        <button onClick={() => this.setState({ windowType: WindowType.TAB })}>
           Tab
         </button>
         <button
@@ -55,4 +53,4 @@ class App extends React.Component<{}, {windowType: WindowType}> {
 
 console.log(Window);
 
-ReactDOM.render(<App/>, document.getElementById('app'));
+ReactDOM.render(<App />, document.getElementById('app'));

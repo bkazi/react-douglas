@@ -43,29 +43,25 @@ export default class Win extends React.Component<Props, State> {
     if (this.externalWindow) {
       this.externalWindow.close();
     }
-  }
+  };
 
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      windowType: props.initialWindowType
-               || WindowType.VIRTUAL,
+      windowType: props.initialWindowType || WindowType.VIRTUAL,
 
-      title:      props.initialTitle
-               || document.getElementsByTagName('title')[0].innerText,
+      title:
+        props.initialTitle ||
+        document.getElementsByTagName('title')[0].innerText,
 
-      x:          props.initialX
-               || 0,
+      x: props.initialX || 0,
 
-      y:          props.initialY
-               || 0,
+      y: props.initialY || 0,
 
-      width:      props.initialWidth
-               || 10,
+      width: props.initialWidth || 10,
 
-      height:     props.initialHeight
-               || 10,
+      height: props.initialHeight || 10,
     };
   }
 
@@ -73,7 +69,10 @@ export default class Win extends React.Component<Props, State> {
     window.addEventListener('beforeunload', this.onWindowClose);
 
     if (this.props.windowType !== WindowType.VIRTUAL) {
-      this.changeWindowType(this.props.windowType || this.state.windowType, WindowType.VIRTUAL);
+      this.changeWindowType(
+        this.props.windowType || this.state.windowType,
+        WindowType.VIRTUAL
+      );
     }
   }
 
@@ -85,14 +84,23 @@ export default class Win extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.props.windowType && this.props.windowType !== prevProps.windowType) {
-      this.changeWindowType(this.props.windowType, prevProps.windowType || prevState.windowType);
+    if (
+      this.props.windowType &&
+      this.props.windowType !== prevProps.windowType
+    ) {
+      this.changeWindowType(
+        this.props.windowType,
+        prevProps.windowType || prevState.windowType
+      );
     }
     if (
       !this.props.windowType &&
       this.state.windowType !== (prevProps.windowType || prevState.windowType)
     ) {
-      this.changeWindowType(this.state.windowType, prevProps.windowType || prevState.windowType);
+      this.changeWindowType(
+        this.state.windowType,
+        prevProps.windowType || prevState.windowType
+      );
     }
 
     if (this.props.title && this.props.title !== prevProps.title) {
@@ -108,20 +116,14 @@ export default class Win extends React.Component<Props, State> {
     if (this.props.x && this.props.x !== prevProps.x) {
       this.changeX(this.props.x);
     }
-    if (
-      !this.props.x &&
-      this.state.x !== (prevProps.x || prevState.x)
-    ) {
+    if (!this.props.x && this.state.x !== (prevProps.x || prevState.x)) {
       this.changeX(this.state.x);
     }
 
     if (this.props.y && this.props.y !== prevProps.y) {
       this.changeY(this.props.y);
     }
-    if (
-      !this.props.y &&
-      this.state.y !== (prevProps.y || prevState.y)
-    ) {
+    if (!this.props.y && this.state.y !== (prevProps.y || prevState.y)) {
       this.changeY(this.state.y);
     }
 
@@ -147,9 +149,7 @@ export default class Win extends React.Component<Props, State> {
   }
 
   changeWindowType(windowType: WindowType, prevWindowType: WindowType) {
-    if (
-      this.externalWindow && prevWindowType !== WindowType.VIRTUAL
-    ) {
+    if (this.externalWindow && prevWindowType !== WindowType.VIRTUAL) {
       this.externalWindow.close();
     }
 
@@ -157,25 +157,25 @@ export default class Win extends React.Component<Props, State> {
       this.externalWindow = window.open(
         '',
         this.props.windowType === WindowType.TAB ? '_blank' : '',
-        this.props.windowType === WindowType.WINDOW ?
-        `width=${this.props.width || this.state.width},` +
-        `height=${this.props.height || this.state.height},` +
-        `left=${this.props.x || this.state.x},` +
-        `top=${this.props.y || this.state.y},` +
-        'channelmode=no,' +
-        'location=no,' +
-        'menubar=no,' +
-        'resizable=yes,' +
-        'titlebar=no,' +
-        'toolbar=no'
-        : undefined,
+        this.props.windowType === WindowType.WINDOW
+          ? `width=${this.props.width || this.state.width},` +
+            `height=${this.props.height || this.state.height},` +
+            `left=${this.props.x || this.state.x},` +
+            `top=${this.props.y || this.state.y},` +
+            'channelmode=no,' +
+            'location=no,' +
+            'menubar=no,' +
+            'resizable=yes,' +
+            'titlebar=no,' +
+            'toolbar=no'
+          : undefined
       );
 
       if (this.externalWindow) {
         // this.externalWindow.addEventListener('unload', this.close);
 
         this.externalWindow.document.head.appendChild(
-          this.externalWindow.document.createElement('title'),
+          this.externalWindow.document.createElement('title')
         );
         this.changeTitle(this.props.title || this.state.title);
 
@@ -186,7 +186,9 @@ export default class Win extends React.Component<Props, State> {
 
   changeTitle(titleString: string) {
     if (this.externalWindow) {
-      const title = this.externalWindow.document.getElementsByTagName('title')[0];
+      const title = this.externalWindow.document.getElementsByTagName(
+        'title'
+      )[0];
       title.innerText = titleString;
     }
   }
