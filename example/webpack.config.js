@@ -4,10 +4,11 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   entry: path.join(__dirname, 'src', 'index.tsx'),
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-eval-source-map',
   devServer: {
     contentBase: './dist',
   },
+  mode: 'development',
   module: {
     rules: [
       {
