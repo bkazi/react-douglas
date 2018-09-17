@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-export enum WindowType {
+enum WindowType {
   VIRTUAL = 'VIRTUAL',
   TAB = 'TAB',
   WINDOW = 'WINDOW',
@@ -38,36 +38,26 @@ interface State {
   height: number;
 }
 
-export default class Win extends React.Component<Props, State> {
+class Win extends React.Component<Props, State> {
   private container = document.createElement('div');
   private externalWindow: Window | null = null;
-  private onWindowClose: () => any = () => {
-    if (this.externalWindow) {
-      this.externalWindow.close();
-    }
-  };
 
-  constructor(props: Props) {
-    super(props);
+  public constructor(props: Props, ...args: any[]) {
+    super(props, ...args);
 
     this.state = {
       windowType: props.initialWindowType || WindowType.VIRTUAL,
-
       title:
         props.initialTitle ||
         document.getElementsByTagName('title')[0].innerText,
-
       x: props.initialX || 0,
-
       y: props.initialY || 0,
-
       width: props.initialWidth || 10,
-
       height: props.initialHeight || 10,
     };
   }
 
-  componentDidMount() {
+  public componentDidMount() {
     window.addEventListener('beforeunload', this.onWindowClose);
 
     if (this.props.windowType !== WindowType.VIRTUAL) {
@@ -78,14 +68,14 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  public componentWillUnmount() {
     window.removeEventListener('beforeunload', this.onWindowClose);
     if (this.externalWindow) {
       this.externalWindow.close();
     }
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  public componentDidUpdate(prevProps: Props, prevState: State) {
     if (
       this.props.windowType &&
       this.props.windowType !== prevProps.windowType
@@ -150,7 +140,13 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeWindowType(windowType: WindowType, prevWindowType: WindowType) {
+  private onWindowClose = () => {
+    if (this.externalWindow) {
+      this.externalWindow.close();
+    }
+  };
+
+  private changeWindowType(windowType: WindowType, prevWindowType: WindowType) {
     if (this.externalWindow && prevWindowType !== WindowType.VIRTUAL) {
       this.externalWindow.close();
     }
@@ -186,7 +182,7 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeTitle(titleString: string) {
+  private changeTitle(titleString: string) {
     if (this.externalWindow) {
       const title = this.externalWindow.document.getElementsByTagName(
         'title'
@@ -195,7 +191,7 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeX(x: number) {
+  private changeX(x: number) {
     if (
       this.externalWindow &&
       (this.props.windowType || this.state.windowType) === WindowType.WINDOW
@@ -204,7 +200,7 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeY(y: number) {
+  private changeY(y: number) {
     if (
       this.externalWindow &&
       (this.props.windowType || this.state.windowType) === WindowType.WINDOW
@@ -213,7 +209,7 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeWidth(width: number) {
+  private changeWidth(width: number) {
     if (
       this.externalWindow &&
       (this.props.windowType || this.state.windowType) === WindowType.WINDOW
@@ -222,7 +218,7 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  changeHeight(height: number) {
+  private changeHeight(height: number) {
     if (
       this.externalWindow &&
       (this.props.windowType || this.state.windowType) === WindowType.WINDOW
@@ -231,12 +227,12 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 
-  renderVirtualWindow() {
+  private renderVirtualWindow() {
     return (
       <div
         style={{
           position: 'absolute',
-          overflow: this.props.scrollable ? 'scroll' : 'hidden',
+          overflow: this.props.scrollable ? 'auto' : 'hidden',
           left: `${this.props.x || this.state.x}px`,
           top: `${this.props.y || this.state.y}px`,
           width: `${this.props.width || this.state.width}px`,
@@ -249,14 +245,14 @@ export default class Win extends React.Component<Props, State> {
     );
   }
 
-  renderPortalWindow() {
+  private renderPortalWindow() {
     if (this.props.className) {
       this.container.className = this.props.className;
     }
     return ReactDOM.createPortal(this.props.children, this.container);
   }
 
-  render() {
+  public render() {
     switch (this.props.windowType) {
       case WindowType.VIRTUAL:
         return this.renderVirtualWindow();
@@ -266,3 +262,5 @@ export default class Win extends React.Component<Props, State> {
     }
   }
 }
+
+export { Win as Window, WindowType };

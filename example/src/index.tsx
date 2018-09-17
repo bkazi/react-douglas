@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import Window, { WindowType } from '../../src/Window';
+import { Window as DouglasWindow, WindowType } from '../../src';
 
 import './style.css';
 
@@ -29,7 +29,7 @@ class App extends React.Component<{}, { windowType: WindowType }> {
         >
           Window
         </button>
-        <Window
+        <DouglasWindow
           windowType={this.state.windowType}
           x={100}
           y={100}
@@ -46,12 +46,10 @@ class App extends React.Component<{}, { windowType: WindowType }> {
           >
             HelloWorld!
           </div>
-        </Window>
+        </DouglasWindow>
       </div>
     );
   }
 }
-
-console.log(Window);
 
 ReactDOM.render(<App />, document.getElementById('app'));
