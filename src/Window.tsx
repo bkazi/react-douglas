@@ -7,15 +7,6 @@ enum WindowType {
   WINDOW = 'WINDOW',
 }
 
-interface RenderProps {
-  changeX: (x: number | ((x: number) => number)) => void;
-  changeY: (y: number | ((y: number) => number)) => void;
-  changeWidth: (width: number) => void;
-  changeHeight: (height: number) => void;
-  changeWindowType: (windowType: WindowType) => void;
-  windowType: WindowType;
-}
-
 interface Props {
   windowType: WindowType;
   title?: string;
