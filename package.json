@@ -4,6 +4,7 @@
   "description": "GUI windowing system for react",
   "main": "dist/react-douglas.min.js",
   "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "dist",
     "lib",
@@ -14,6 +15,7 @@
     "clean": "rimraf dist lib",
     "build:umd": "webpack",
     "build:esm": "babel -x '.ts,.tsx' ./src/**/* --out-dir lib",
+    "build:types": "tsc --emitDeclarationOnly -p ./tsconfig.json --outDir ./lib",
     "build": "npm run clean && run-p build:*",
     "test": "tslint --fix --project .",
     "reformat:src": "prettier --write 'src/**/*'",
